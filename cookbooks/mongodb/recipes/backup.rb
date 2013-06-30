@@ -2,17 +2,23 @@
 # Cookbook Name:: mongodb
 # Recipe:: backup
 #
-
+ 
 ey_cloud_report "mongodb" do
   message "configuring backup"
 end
 
+# We support three mongo configs, Solo, Stand-Alone, and Replica Sets, only Replica Sets are recommended and supported for Production use.
+replset = true
 mongo_nodes = @node[:utility_instances].select { |instance| instance[:name].match(/^mongodb_repl#{@node[:mongo_replset]}/) }
-if @node[:name] == mongo_nodes.last[:name]
+if mongo_nodes.empty?
+  mongo_nodes = @node[:utility_instances].select { |instance| instance[:name].match(/mongodb/)}
+  replset = false
+end
+
+if (!mongo_nodes.empty? and (!replset or (replset and @node[:name] == mongo_nodes.last[:name]))) or (['solo'].include?(node[:instance_role]) && @node[:mongo_utility_instances].length == 0)
 
   node[:applications].each do |app_name, data|
     user = node[:users].first
-    db_name = "#{app_name}_#{node[:environment][:framework_env]}"
 
     template "/usr/local/bin/mongo-backup" do
       source "mongo-backup.rb.erb"
@@ -20,9 +26,6 @@ if @node[:name] == mongo_nodes.last[:name]
       group "root"
       mode 0700
       variables({
-        :username => 'root',
-        :password => user[:password],
-        :database => db_name,
         :secret_key => node[:aws_secret_key],
         :id_key => node[:aws_secret_id],
         :env => node[:environment][:name],
@@ -30,12 +33,10 @@ if @node[:name] == mongo_nodes.last[:name]
       })
     end
 
-    if node[:environment][:framework_env] == 'production'
-      cron "#{app_name}-mongo-backup" do
-        hour "1"
-        minute "30"
-        command "/usr/local/bin/mongo-backup"
-      end
+    cron "#{app_name}-mongo-backup" do
+      hour "1"
+      minute "30"
+      command "/usr/local/bin/mongo-backup"
     end
   end
 

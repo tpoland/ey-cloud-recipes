@@ -11,7 +11,7 @@ if node["utility_instances"].empty?
   # We have detected no utility instances, so we are skipping the logic for this portion of the recipe.
 else
   if node[:instance_role] == 'util' && node[:name].match(/^mongodb_repl/)
-    default[:mongo_replset] = node[:name].sub("mongodb_repl", "").split("_")[0]
+    default[:mongo_replset] = node[:name].match(/mongodb_repl(.*)_\d+\z/)[1]
   else
     default[:mongo_replset] = false
   end

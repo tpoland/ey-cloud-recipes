@@ -1,16 +1,16 @@
 ey-cloud-recipes/mongodb v2.2.0
 --------
 
-A chef recipe for enabling mongodb v2.2.0 on Engine Yard AppCloud.  This recipe downloads the latest version binary from 10gen and sets up a 3 node MongoDB Replica Set.
+A chef recipe for enabling mongodb v2.2.0 on Engine Yard AppCloud.  This recipe downloads the latest version binary from 10gen and configures MongoDB based on the configuration and naming of instances in your environment.
 
 It makes a few assumptions:
 
-  * You will be running MongoDB on a utility instance(s).
-  * You will be using Replica sets.
+  * You will be running MongoDB on a utility instance(s) or Solo.
+  * If your environment is labeled `production` a replica set with a minimum of 3 nodes is required.
 
 MMS support
 --------
-The recipe will also install Mongo Monitoring Service (MMS) on a solo or db_master. You will need to provide your api & secret keys. 
+The recipe will also install Mongo Monitoring Service (MMS) on a Solo or on your Mongo Utility instances. You will need to provide your api & secret keys. 
 See https://mms.10gen.com/help/ for more information.
 
 
