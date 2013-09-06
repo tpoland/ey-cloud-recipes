@@ -5,15 +5,15 @@
 
 # NOTE: Environment names are cap sensitive
 API_KEYS = {
-  "EnvName" => ""
+  "mongoid_blog_clone" => "d0ebc3f823fcd1b02326c697b6b1f6ef"
 }
 SECRET_KEYS = {
-  "EnvName" => ""
+  "mongoid_blog_clone" => "770ab0e4c9ee30f31cd626218da96341"
 }
 # setting API_KEYS and SECRET_KEYS for your environment effectively enables this recipe
 if API_KEYS.has_key? @node[:environment][:name] and SECRET_KEYS.has_key? @node[:environment][:name]
   InstallDirectory = "/db/mms"
-  MmsFileName = "10gen-mms-agent"
+  MmsFileName = "mms-monitoring-agent"
   MmsZipFile = "#{MmsFileName}.zip"
   MmsZipUrl = "https://mms-stage.10gen.com/settings/#{MmsZipFile}"
 
